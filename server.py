@@ -8,6 +8,7 @@ import linked_list
 import hash_table
 import binary_tree
 import queue
+import stack
 import random
 
 # app
@@ -204,9 +205,21 @@ def get_numeric_post_bodies():
   
   return jsonify(return_list)
 
-@app.route("/blog_post/<blog_post_id>", methods=["DELETE"])
-def delete_blog_post(blog_post_id):
-  pass
+@app.route("/blog_post/delete_last_10", methods=["DELETE"])
+def delete_last_10():
+  blog_posts = BlogPost.query.all()
+
+  st = stack.Stack()
+
+  for post in blog_posts:
+    st.push(post)
+
+  for _ in range(10):
+    post_to_delete = st.pop()
+    db.session.delete(post_to_delete.data)
+    db.session.commit()
+
+  return jsonify({"message": "success"})
 
 if __name__ == '__main__':
   app.run(debug=True)
